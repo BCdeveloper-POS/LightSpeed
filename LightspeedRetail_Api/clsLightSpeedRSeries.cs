@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -72,7 +73,7 @@ namespace LightspeedRetail_Api
                 client_secret = ClientSecret,
                 grant_type = "refresh_token",
                 refresh_token = refreshtoken
-                //refresh_token = "def50200677a05f47ab798f78cb471eb90dd7d9a94d8a429f6bcc56c9782ff14774c2abfab0c6db7ce8563b46715b93e603ae06939b02e3486746b1cdcdc9f3319314eb4128e6d658a14b320d1e3513c78015f5d9d3466652303a9bbf812c42ea453f8dde1495b54f702b3a3129ade8ab26443965393e8f18b4ae13e15944a536aa67a8bfad44fa1b238bcbf3fa0533076a4188a8ef4adb7a69372b88931ecacde1530eb711068fd034bb03f108392b84551fad4a1c1b830cd73ac677961ab170ec1c3d1f421d5fe397d66b64d9c1f715a28c11a29b088673a93fa9cba41c8b849085c0261b0391485781d395ee49255edcad09e46a790b8de9205d45d8d6a5bbe27d8ef5bf1f31473ba79be34f15407a0c6828026f893d9977027a2b1269a206e0f6d6c4d519de5e712e267a966465008c5b76a44311fb9a41c0c59821339f9c96db356c36e33be3e7fed44af61a9a879061a05c6f7846c61b78f9ea0b02eeba96ca6ec81c786ba3835e95f677e3c9407c4b579968d1b20540aea5985fb8df8d88502476a3acf535c9a138ff4148a56612f7cd12264eff91285e7d49d80a29e0d7429181924411eaca84753da6178aa1b589da1dc79f3fe"
+              // refresh_token = "def50200738ee3078e4d518f3913d82c079133eb4646b1fa3fb14580610af62d76d5ba712b46e4a7a149890935cfdf314ad913747d2911a83a6e6987ac63eb9f282acc6e2d1fd6fce3e0259bc3094bd45141050059d76134ba6a00e503fbc98c448b5cf45b2588d855365774640a97b143a14ca8aca1f98d3870ef44a5ae92a3871b030d0fb4321599efeab2641311c8bc0775cda98f65b20e87274980224435cc71378dbe2e2fb1e163fd2f54faf99f0e9b5f6868c78a4eef3e1b59f0aa5bc3bed54ceb891139529d156f2d9c4646a345092c6d71a6633e3961ddd01e2036c8b98c2bf2c015f8a9f0919c0271fc53f05191ca781eac9d5a23017b593b6fa6d3fbe52b828d8d2858049af9621cc427fa58a1ca7b46c134d075a70a3b028374eeb99b0e07b8901ba193f47c52ea93af2ac467bd24b06a52ea77585b26a0b85418df2d75b2eea348076ed56d1db730cd302ff540fc4cfb7fff2438323e82f0f53c6ab80cff73e7ba2d979ca975cb59ea822357dc198230773c5cab85c11eb0befc50fb77176c75ee0d97c2255b9c1e80729a4311a5243c8307c865e3f9f1b023868e1a099d341b95bb849411ba5851037c22b1d9028edc3d"
 
             };
             string jsonBody = JsonConvert.SerializeObject(body);
@@ -82,6 +83,7 @@ namespace LightspeedRetail_Api
 
             var response = client.Execute(request, Method.Post);
             string responseContent = response.Content;
+
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 dynamic data = JsonConvert.DeserializeObject(responseContent);
@@ -102,6 +104,7 @@ namespace LightspeedRetail_Api
 
                     DatabaseObject db = new DatabaseObject();
                     db.GetDataTable("usp_bc_LightSpeedAccessTokenInsert", parameters);
+
                 }
                 catch { }
             }
@@ -133,6 +136,13 @@ namespace LightspeedRetail_Api
                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                         var response = await client.ExecuteAsync(request, Method.Get);
+                        //comment later 
+
+                        //string parentDirectory = Directory.GetParent(BaseDirectory).FullName;
+                       /*string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                         string filePath = Path.Combine(currentDirectory, StoreId + "_product.json");
+                         File.WriteAllText(filePath, response.Content);*/
+
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             var itemList = JsonConvert.DeserializeObject<ClsLightProductList.ItemList>(response.Content);

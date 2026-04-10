@@ -21,15 +21,16 @@ namespace LightspeedRetail_Api
                 {
                     try
                     {
-                        if (posDetail.PosName.ToUpper() == "LIGHTSPEED")
+                        if (posDetail.PosName.ToUpper() == "LIGHTSPEED"  )
                         {
-
+                            Console.WriteLine("fetching storeid_" + posDetail.StoreSettings.StoreId);
                             if (posDetail.StoreSettings.StoreId == 10716 || posDetail.StoreSettings.StoreId == 10717 || posDetail.StoreSettings.StoreId == 11267)
                             {
                                 clsLightspeedAPI clsLightspeedAPI = new clsLightspeedAPI(posDetail.StoreSettings.StoreId, posDetail.StoreSettings.POSSettings.tax, posDetail.StoreSettings.POSSettings.BaseUrl, posDetail.StoreSettings.POSSettings.APIKey);
                                 clsLightspeedAPI.RunAsync().GetAwaiter().GetResult();
                                 Console.WriteLine();
                             }
+  
                             else if (lightspeedRSeries.Contains(posDetail.StoreSettings.StoreId.ToString()))
                             {
                                 clsLightSpeedRSeries rSeries = new clsLightSpeedRSeries(posDetail.StoreSettings.StoreId, posDetail.StoreSettings.POSSettings.tax, posDetail.StoreSettings.POSSettings.BaseUrl, posDetail.StoreSettings.POSSettings.ClientId, posDetail.StoreSettings.POSSettings.ClientSecret, posDetail.StoreSettings.POSSettings.AccountID, posDetail.Refresh_token);

@@ -327,6 +327,7 @@ namespace LightspeedRetail_Api
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                 var response = await client.ExecuteAsync(request, Method.Post);
+
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                 {
                     var content = response.Content;
@@ -370,7 +371,12 @@ namespace LightspeedRetail_Api
                     //request.AddHeader("content-type", "application/json");
                     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
                     var response = await client.ExecuteAsync(request, Method.Get);
-
+                   /* if (response != null)
+                    {
+                        File.WriteAllText($"Lightspeed_{StoreId}_PageResponse.json", response.Content);
+                        Console.WriteLine("Response written to file.");
+                    }
+*/
                     if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     {
                         var content = response.Content;
