@@ -348,6 +348,8 @@ namespace LightspeedRetail_Api
                 {
                     Console.WriteLine($"API Error: {response.StatusCode} - {response.Content}");
                 }
+
+              //  File.WriteAllText($"{_storeId}_Product_Full.json", JsonConvert.SerializeObject(prod, Formatting.Indented));// comment Later 
             }
             catch (Exception e)
             {

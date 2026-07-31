@@ -48,8 +48,8 @@ namespace LightspeedRetail_Api
                 List<ClsLightProductList.Item> item = await LightspeedSetting(BaseUrl, ClientId, ClientSecret, array[0], AccountID);
 
                 //For only Testing, Comment this
-                //string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IlJUX09BVVRIMl8yMDI0XzA3XzIyIn0.eyJqdGkiOiJiMDJhYzgzYmQ4N2YxZDQxMWM5YzIxNmE4OWZmOThlZGIwMDI4NWE3YjJlYjU4ZThhZTRiZWQzZDZlOTU2YmExOGRhYTgyNjg0MmVjY2YxNiIsImlzcyI6Imh0dHBzOi8vY2xvdWQubGlnaHRzcGVlZGFwcC5jb20iLCJhdWQiOiJhOTdiYjI4YWMxY2EyN2Q3YjkzNGI2ZmU1ZTYwMThhMzcwZTM4OGEwZmU5ZGJhZjljNDI5MWFkOTZiNjE3M2JjIiwic3ViIjoiMTI2MzE5MCIsImFjY3QiOiIxODk5NzQiLCJzY29wZSI6ImVtcGxveWVlOmFkbWluIiwiaWF0IjoxNzUzMjUyODI2LjUxNzA2MiwibmJmIjoxNzUzMjUyODI2LjUxNzA2MiwiZXhwIjoxNzUzMjU2NDI2LjQ5MjUyNn0.MIM5L57WjBdIIxYjA52wUNNVU1txPk5y_R2fzdFD-CDe00LwY4Ai0ddRKgIQyfE7btMd2zSxwE0mExUQRF6jQVjZLE-G_YRNjZz3do19boXhasl2wdZyjGKjlF2H7ugX0twue7eTsdkslnS-srh29N6u1cVcpZTqV3SxdkIUp0JUEASXGNdrBddBUe0RsR_i1UX3hiIBLSJ4usjSEtYzH5xmOZJ9F5241fYuNNva3c2oGra3r15fxpEXFp68OzVdQKuF-YM6eZd6uTnwGRmtuKG4nOkr_RzXZ1By5g9MvsiEDxTV8VmaZxutEY2NZ3qIqF4QnxqV-0ownu6khRIzxQ";
-                //List<ClsLightProductList.Item> item = await LightspeedSetting(BaseUrl, ClientId, ClientSecret, token, AccountID);
+              //  string token = "def5020019d8a45912418f56ee8257fd50ac465da81bc4beb2e9e449da11c79dd6ec2ffbf43886ffc8b61b0d19c65196a80e1643d0d4833da3968ea6504227177fd847f95f55986f31d6426a9b0fe3f32d8f6efb4d36f0bc2938bd3ba48be6d166a43d041f578b6601b51a290f763fdb7438e442a47ef7af63343fceee1bae7d2a8fac88958da75fb7a726b6acd3b21633ec9d790b41a92c61f46af65501beb4d5b885f2134252c0411112e239a9495ce954027a7d6e1b166aee02b12ee19a386f3de3abad7487ed6729d530bb11ae5d889a03844a32b10d8ab4fecce31af2e870889c30b8e933d29017b1c62b91d837e14ed77dfa31ba255cf66ad0d188f2d193996530dff2d0a8b49050b6c05b73b7234e8795df5f3711ce6889a8e148b926e6479e242fc1179e43410194d8fdd1ce73bbc8907a3875a7fbd2ad5b062091207805b0af00161341fb074adfe9a54b25bed2cdef0f4b0b1b25e0ec02cf2b11612c07a9eb9640865711cd92ff7c623f8f6bb399b80d1dad4a838bc9591aea7812b54e718451c7c7393a4195d20bc4419559dcdc9eca015afcf61671a5f01947dbf9aaef8a5640dc06b10ea4fc1c30ecc8a6d50c6a90b87b4a";
+               // List<ClsLightProductList.Item> item = await LightspeedSetting(BaseUrl, ClientId, ClientSecret, token, AccountID);
 
 
                 Parsing(item, StoreId, tax);
@@ -72,8 +72,8 @@ namespace LightspeedRetail_Api
                 client_id = ClientId,
                 client_secret = ClientSecret,
                 grant_type = "refresh_token",
-                refresh_token = refreshtoken
-              // refresh_token = "def50200738ee3078e4d518f3913d82c079133eb4646b1fa3fb14580610af62d76d5ba712b46e4a7a149890935cfdf314ad913747d2911a83a6e6987ac63eb9f282acc6e2d1fd6fce3e0259bc3094bd45141050059d76134ba6a00e503fbc98c448b5cf45b2588d855365774640a97b143a14ca8aca1f98d3870ef44a5ae92a3871b030d0fb4321599efeab2641311c8bc0775cda98f65b20e87274980224435cc71378dbe2e2fb1e163fd2f54faf99f0e9b5f6868c78a4eef3e1b59f0aa5bc3bed54ceb891139529d156f2d9c4646a345092c6d71a6633e3961ddd01e2036c8b98c2bf2c015f8a9f0919c0271fc53f05191ca781eac9d5a23017b593b6fa6d3fbe52b828d8d2858049af9621cc427fa58a1ca7b46c134d075a70a3b028374eeb99b0e07b8901ba193f47c52ea93af2ac467bd24b06a52ea77585b26a0b85418df2d75b2eea348076ed56d1db730cd302ff540fc4cfb7fff2438323e82f0f53c6ab80cff73e7ba2d979ca975cb59ea822357dc198230773c5cab85c11eb0befc50fb77176c75ee0d97c2255b9c1e80729a4311a5243c8307c865e3f9f1b023868e1a099d341b95bb849411ba5851037c22b1d9028edc3d"
+                  refresh_token = refreshtoken
+                // refresh_token = "def502003587cc6928deb79fabe69f1efd6f4cf20b50139fd0ad96a116b8e179b8eff997b5b987cf1157a18cbf432e8421ff5c4ebbc5e3554b6b78f17e00a6982582765d2d0152d8525d8cd9c70aca8109bceab222b3bdc108ba32f01218f74b41f73db182579e90a43f21d2388c8f81d7f2b97cedfeefff0a7489337a4b6d623661f7fee44f2192016a1abb4580d750e4030c71d4c1f8b1165aea6ca2b0593e84c0ccfcae58ab1a18168d7b027e9c6812a4299484202ba2931a1e64d4e5dd2cb80daf008c02b3050194e0db802231e1ad5d677a754a59f0790d42ca3f5c349d709732f1a212e36dd8944dc29c906e4e9df6b638d0a8a3537f94d7c2216d11649d2251a3d0851faa7e8f6e0080c1a45253c1ef31878f18bbf087748578e050af1399fb8b38e5dedd240e4a1b451f12be943c8c4cb3e6c4c31cae04c7086127d7f831ada5f519961692fa317be58a5437a574cbde26463ea4dfba1930b5e5521c61e7851c2f3ea2fd2ca538bc4a1e3f99e43bd245fc4114fcfaf1e076037fd6e0f01fa34e758bdc894812442ca20241072453e7ebae84c5681162e224f280b6b4eaa195e90e117a0b3b15d98293631f41d291653db8922dcc"
 
             };
             string jsonBody = JsonConvert.SerializeObject(body);
@@ -136,12 +136,14 @@ namespace LightspeedRetail_Api
                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
                         var response = await client.ExecuteAsync(request, Method.Get);
+
                         //comment later 
+                        // File.WriteAllText($"{StoreId}_Product_Page_{pageNo + 1}.json", response.Content); // comment Later 
 
                         //string parentDirectory = Directory.GetParent(BaseDirectory).FullName;
-                       /*string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                         string filePath = Path.Combine(currentDirectory, StoreId + "_product.json");
-                         File.WriteAllText(filePath, response.Content);*/
+                        /*string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                          string filePath = Path.Combine(currentDirectory, StoreId + "_product.json");
+                          File.WriteAllText(filePath, response.Content);*/
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
@@ -163,6 +165,9 @@ namespace LightspeedRetail_Api
                             Console.WriteLine("Error fetching data: " + response.StatusCode);
                         }
                     }
+
+                  //  File.WriteAllText($"{StoreId}_Product_Full.json", JsonConvert.SerializeObject(allItems, Formatting.Indented)); // comment Later 
+
                 }
                 catch (Exception ex)
                 {
@@ -175,6 +180,7 @@ namespace LightspeedRetail_Api
             {
                 Console.WriteLine("Refresh Token Expired", StoreId);
             }
+
 
             return new List<ClsLightProductList.Item>(); 
         }
