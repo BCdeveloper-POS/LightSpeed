@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text;
 using System.Threading.Tasks;
 using static LightspeedRetail_Api.clsLighspeedRetailV3;
@@ -28,7 +29,8 @@ namespace LightspeedRetail_Api
         private readonly string ClientSecret;
         private readonly string RefreshToken;
         private readonly int AccountID;
-        public clsLightSpeedRSeries(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, int _AccountID, string _RefreshToken)
+        private readonly string shopID;
+        public clsLightSpeedRSeries(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, int _AccountID, string _RefreshToken , string  _shopID )
         {
             StoreId = _StoreId;
             tax = _tax;
@@ -37,6 +39,7 @@ namespace LightspeedRetail_Api
             ClientSecret = _ClientSecret;
             RefreshToken = _RefreshToken;
             AccountID = _AccountID;
+            shopID = _shopID;
             Console.WriteLine("Generating Lightspeed " + StoreId + " Product File....");
             Console.WriteLine("Generating Lightspeed " + StoreId + " Fullname File....");
         }
@@ -52,7 +55,8 @@ namespace LightspeedRetail_Api
                // List<ClsLightProductList.Item> item = await LightspeedSetting(BaseUrl, ClientId, ClientSecret, token, AccountID);
 
 
-                Parsing(item, StoreId, tax);
+              //  Parsing(item, StoreId, tax);
+                Parsing(item, StoreId, tax, shopID);
             }
             catch (Exception ex)
             {
@@ -72,9 +76,8 @@ namespace LightspeedRetail_Api
                 client_id = ClientId,
                 client_secret = ClientSecret,
                 grant_type = "refresh_token",
-                  refresh_token = refreshtoken
-                // refresh_token = "def502003587cc6928deb79fabe69f1efd6f4cf20b50139fd0ad96a116b8e179b8eff997b5b987cf1157a18cbf432e8421ff5c4ebbc5e3554b6b78f17e00a6982582765d2d0152d8525d8cd9c70aca8109bceab222b3bdc108ba32f01218f74b41f73db182579e90a43f21d2388c8f81d7f2b97cedfeefff0a7489337a4b6d623661f7fee44f2192016a1abb4580d750e4030c71d4c1f8b1165aea6ca2b0593e84c0ccfcae58ab1a18168d7b027e9c6812a4299484202ba2931a1e64d4e5dd2cb80daf008c02b3050194e0db802231e1ad5d677a754a59f0790d42ca3f5c349d709732f1a212e36dd8944dc29c906e4e9df6b638d0a8a3537f94d7c2216d11649d2251a3d0851faa7e8f6e0080c1a45253c1ef31878f18bbf087748578e050af1399fb8b38e5dedd240e4a1b451f12be943c8c4cb3e6c4c31cae04c7086127d7f831ada5f519961692fa317be58a5437a574cbde26463ea4dfba1930b5e5521c61e7851c2f3ea2fd2ca538bc4a1e3f99e43bd245fc4114fcfaf1e076037fd6e0f01fa34e758bdc894812442ca20241072453e7ebae84c5681162e224f280b6b4eaa195e90e117a0b3b15d98293631f41d291653db8922dcc"
-
+                refresh_token = refreshtoken
+                //  refresh_token = "def5020033a526d4695f782daeca72ee9e9756f5a542b9cab6965a657e3844a9f99e24a19ea2e1280d8957df8891c4254eb7998cafc73ef4e7dcb3e61ebc3c9690dba5c1c92e14ab5d641ee689ced1764b4220f05bf5ae9ac13463984139dc0aa8c87e274df90876a90f259b09f962f3c8a37783d25524207e3617bc9dc266e7fad179aad3043a09f611f90bba7518bcdbe71361bdb8c825ac3ebf88abf408cc85bbc5701baeeecd471ac802c3118b22eef191f8afa0e5abe6dd6bd13b50b02255c61ff8e443564a2ef47038c84bd466dc333f145db233eae3df2bca1d16a7b8e146a07b56bd73bf46c151d1d1db3f99d0d514546321e3bf957156b7bb497c07fad1bd6ba0a00188aff752629de09b2d0fb2d63ddc22c0a3a3538b98e7bdc2cd858c4a49fb2b42ed0042aeaec8dfc833e61748314ee71de2c52c0ede8f3c9abb95478d9fb7618e511eb2f86dc05e704358430fe9149b658246f322982c886d5f1558bc7ed235bae98ec431b2cb3f9f9777d77ef0f6c8defbb9d53e795da02b4f4ef579dfb52fa6c810389713ec977679b2aa6594606cbac0f30055c8b2fe59c7cf33f61bfcb42f6a033cd3b6c57b8364a6cd712173db"
             };
             string jsonBody = JsonConvert.SerializeObject(body);
             request.AddStringBody(jsonBody, DataFormat.Json);
@@ -137,13 +140,11 @@ namespace LightspeedRetail_Api
 
                         var response = await client.ExecuteAsync(request, Method.Get);
 
-                        //comment later 
+                        //comment later
+
                         // File.WriteAllText($"{StoreId}_Product_Page_{pageNo + 1}.json", response.Content); // comment Later 
 
-                        //string parentDirectory = Directory.GetParent(BaseDirectory).FullName;
-                        /*string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                          string filePath = Path.Combine(currentDirectory, StoreId + "_product.json");
-                          File.WriteAllText(filePath, response.Content);*/
+
 
                         if (response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
@@ -184,10 +185,15 @@ namespace LightspeedRetail_Api
 
             return new List<ClsLightProductList.Item>(); 
         }
-        public void Parsing(List<ClsLightProductList.Item> ItemResult, int storeid, decimal tax)
+        public void Parsing(List<ClsLightProductList.Item> ItemResult, int storeid, decimal tax, string shopID)
         {
             List<ClsLightProductList.LightProductModel> prodList = new List<ClsLightProductList.LightProductModel>();
             List<ClsLightProductList.LightFullnameModel> fullNameList = new List<ClsLightProductList.LightFullnameModel>();
+            
+            // Added: shopID comes from POSSettings and identifies which shop's inventory row belongs
+            // to this store. Parsed once here rather than on every item.
+            int storeShopId = -1;
+            bool hasShopId = !string.IsNullOrEmpty(shopID) && int.TryParse(shopID, out storeShopId);
             if (ItemResult.Count > 0)
             {
                 foreach (var data in ItemResult)
@@ -207,7 +213,18 @@ namespace LightspeedRetail_Api
 
                     prod.sku = "#" + data.systemSku;
                     fullName.sku = prod.sku;
-                    prod.Qty = data.ItemShops?.ItemShop?.FirstOrDefault() != null ? Convert.ToInt32(data.ItemShops.ItemShop.First().qoh) : 0;
+
+                    //  prod.Qty = data.ItemShops?.ItemShop?.FirstOrDefault() != null ? Convert.ToInt32(data.ItemShops.ItemShop.First().qoh) : 0;
+
+                    if (hasShopId)
+                    {
+                        var shopStock = data.ItemShops?.ItemShop?.FirstOrDefault(s => s.shopID == storeShopId);
+                        prod.Qty = shopStock != null ? Convert.ToInt32(shopStock.qoh) : 0;
+                    }
+                    else
+                    {
+                        prod.Qty = data.ItemShops?.ItemShop?.FirstOrDefault() != null ? Convert.ToInt32(data.ItemShops.ItemShop.First().qoh) : 0;
+                    }
                     prod.pack = 1;
                     fullName.pack = prod.pack;
                     prod.uom = "";
