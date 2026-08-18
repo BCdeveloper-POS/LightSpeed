@@ -92,7 +92,7 @@ namespace LightspeedRetail_Api
         public string Username { get; set; }
         public string Password { get; set; }
         public string Pin { get; set; }
-        public int SHOPID { get; set; }
+        public string shopID { get; set; }
         public string Code { get; set; }
         public string tokenid { get; set; }
         public string instock { get; set; }
