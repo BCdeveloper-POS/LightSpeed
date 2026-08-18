@@ -1,15 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using LightspeedRetail_Api.Models;
+using Newtonsoft.Json;
 using RestSharp;
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using static LightspeedRetail_Api.clsLightspeedAPI_XProductList;
 using System.Configuration;
-using LightspeedRetail_Api.Models;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
+using static LightspeedRetail_Api.clsLightspeedAPI_XProductList;
 
 namespace LightspeedRetail_Api
 {
@@ -134,7 +135,9 @@ namespace LightspeedRetail_Api
                                        altupc5 = "",
                                        active = p.active,
                                        pcat = p.product_category?.name,
-                                       outlet = i.outlet_id
+                                       outlet = i.outlet_id,
+                                        // Added: carry variant_options through so the UOM (name == "Size") can be derived below
+                                       variantOptions = p.variant_options
                                    }).ToList();
 
 
@@ -175,6 +178,23 @@ namespace LightspeedRetail_Api
                     prod.End = "";
                     prod.pack = 1;
                     full.pack = 1;
+                    prod.uom = "";
+                    full.uom = "";
+                    //newly added to get uoms from API 
+                    if (item.variantOptions != null)
+                    {
+                        var sizeOption = item.variantOptions.FirstOrDefault(v => v != null && v.name != null
+                                                                                && v.name.Trim().Equals("Size", StringComparison.OrdinalIgnoreCase));
+                        if (sizeOption != null && !string.IsNullOrEmpty(sizeOption.value))
+                        {
+                            Match uomMatch = Regex.Match(sizeOption.value, @"\b(\d+(?:\.\d+)?)\s*(ML|OZ|L)\b", RegexOptions.IgnoreCase);
+                            if (uomMatch.Success)
+                            {
+                                prod.uom = (uomMatch.Groups[1].Value + " " + uomMatch.Groups[2].Value).ToUpper();
+                                full.uom = prod.uom;
+                            }
+                        }
+                    }
                     full.country = "";
                     full.region = "";
 
@@ -413,7 +433,8 @@ namespace LightspeedRetail_Api
             public ProductCategory product_category { get; set; }
             public Supplier supplier { get; set; }
             public Brand brand { get; set; }
-            public List<object> variant_options { get; set; }
+            // public List<object> variant_options { get; set; }
+            public List<VariantOption> variant_options { get; set; }
             public List<Category> categories { get; set; }
             public List<Image> images { get; set; }
             public List<object> skuImages { get; set; }
@@ -468,6 +489,13 @@ namespace LightspeedRetail_Api
             public string id { get; set; }
             public string type { get; set; }
             public string code { get; set; }
+        }
+
+        public class VariantOption
+        {
+            public string id { get; set; }
+            public string name { get; set; }
+            public string value { get; set; }
         }
 
         public class ProductSupplier

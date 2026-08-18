@@ -19,12 +19,12 @@ namespace LightspeedRetail_Api
                 pOSSettings.IntializeStoreSettings();
                 foreach (POSSetting posDetail in pOSSettings.PosDetails)
                 {
-                    //if ( posDetail.StoreSettings.StoreId == 13248)
+                    //if (posDetail.StoreSettings.StoreId == 12320)
                     //{
                     //    Console.WriteLine("fetching storeid" + posDetail.StoreSettings.StoreId);
                     //}
                     //else { continue; }
-                        try
+                    try
                         {
                             if (posDetail.PosName.ToUpper() == "LIGHTSPEED")
                             {
