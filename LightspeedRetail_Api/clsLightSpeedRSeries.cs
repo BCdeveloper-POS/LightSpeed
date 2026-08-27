@@ -22,6 +22,7 @@ namespace LightspeedRetail_Api
         string BaseDirectory = ConfigurationManager.AppSettings["BaseDirectory"];
         string DeveloperId = ConfigurationManager.AppSettings["DeveloperId"];
         string showonline = ConfigurationManager.AppSettings["showonline"];
+        string OnlinePricing = ConfigurationManager.AppSettings["Onlineprice"];
         private readonly int StoreId;
         private readonly decimal tax;
         private readonly string BaseUrl;
@@ -140,7 +141,7 @@ namespace LightspeedRetail_Api
 
                         var response = await client.ExecuteAsync(request, Method.Get);
 
-                        //comment later
+                      
 
                         // File.WriteAllText($"{StoreId}_Product_Page_{pageNo + 1}.json", response.Content); // comment Later 
 
@@ -167,7 +168,7 @@ namespace LightspeedRetail_Api
                         }
                     }
 
-                  //  File.WriteAllText($"{StoreId}_Product_Full.json", JsonConvert.SerializeObject(allItems, Formatting.Indented)); // comment Later 
+                  // File.WriteAllText($"{StoreId}_Product_Full.json", JsonConvert.SerializeObject(allItems, Formatting.Indented)); // comment Later 
 
                 }
                 catch (Exception ex)
@@ -236,6 +237,17 @@ namespace LightspeedRetail_Api
                     prod.Price = Convert.ToDecimal(data.Prices.ItemPrice[0].amount);
                     prod.sprice = 0;
                     fullName.Price = prod.Price;
+                    if (OnlinePricing.Contains(storeid.ToString()))
+                    {
+                        var onlinePrice = data.Prices.ItemPrice
+                            .FirstOrDefault(p => p.useType == "Online");
+
+                        if (onlinePrice != null)
+                        {
+                            prod.Price = onlinePrice.amount;
+                        }
+                    }
+
                     prod.tax = tax;
                     if (!string.IsNullOrEmpty(data.category?.fullPathName))
                     {
