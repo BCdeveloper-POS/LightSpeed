@@ -78,7 +78,7 @@ namespace LightspeedRetail_Api
                 client_secret = ClientSecret,
                 grant_type = "refresh_token",
                 refresh_token = refreshtoken
-                //  refresh_token = "def5020033a526d4695f782daeca72ee9e9756f5a542b9cab6965a657e3844a9f99e24a19ea2e1280d8957df8891c4254eb7998cafc73ef4e7dcb3e61ebc3c9690dba5c1c92e14ab5d641ee689ced1764b4220f05bf5ae9ac13463984139dc0aa8c87e274df90876a90f259b09f962f3c8a37783d25524207e3617bc9dc266e7fad179aad3043a09f611f90bba7518bcdbe71361bdb8c825ac3ebf88abf408cc85bbc5701baeeecd471ac802c3118b22eef191f8afa0e5abe6dd6bd13b50b02255c61ff8e443564a2ef47038c84bd466dc333f145db233eae3df2bca1d16a7b8e146a07b56bd73bf46c151d1d1db3f99d0d514546321e3bf957156b7bb497c07fad1bd6ba0a00188aff752629de09b2d0fb2d63ddc22c0a3a3538b98e7bdc2cd858c4a49fb2b42ed0042aeaec8dfc833e61748314ee71de2c52c0ede8f3c9abb95478d9fb7618e511eb2f86dc05e704358430fe9149b658246f322982c886d5f1558bc7ed235bae98ec431b2cb3f9f9777d77ef0f6c8defbb9d53e795da02b4f4ef579dfb52fa6c810389713ec977679b2aa6594606cbac0f30055c8b2fe59c7cf33f61bfcb42f6a033cd3b6c57b8364a6cd712173db"
+                // refresh_token = "def50200f3e6f8b1ca7f9d5a11de632a2df453accda1177d1d92b9d2b2a716cff99db14faacb06291cb1f2bb0070773b9709cffe0d5afb01dc589b31abb0baeb82407c0ae85f256b7f588d27d170dbb0f8cd1bf0e8aa3fb8f645f306bccb44650ac9de8528434fcdad48e6fcea9d1f2b614738b069c9a17d2649b8709d36014b4578b0ae85c496a08cf5f54d64cdc70b31a369b5b5ef83e56370ea8aaba02c8c959329d855c8a939a4e8a47778546fe9b6dd5fdbeceb52c3635f94340aa37bdbf22da2fc5832d5304a5e18a7415157043e771a4cba132724a3175f1ed73ce245b259c9d7f4eeb5217c640d804b0cdb9afd414e1425b005ea20c15c8c6c17478502c8c9a97c162fb7a21a06b74aa36ad6b5c86713d8ee4821836d0bc61ad9b551247d7bea3a9f353704635819d544645808cf9f8c2d5f2dfd1d48daa16bdcc06b4122bf93cc4d925c2bbb3e1ffc2cc908700eea87660eeef2b5e49d08c60dd35ebbf3858dcdc01a37d43100c83535af4ca5584f60704c21c14576360ea2db848db7593cebbd128ab7f68a3c20c6049316e64971acfaeb6eaa2eb3f29a4494778edeb60f51ac636342e0bca59a28a64b35e3097c9d7f23"
             };
             string jsonBody = JsonConvert.SerializeObject(body);
             request.AddStringBody(jsonBody, DataFormat.Json);
@@ -261,6 +261,7 @@ namespace LightspeedRetail_Api
                     {
                         fullName.pcat = fullName.pcat1 = fullName.pcat2 = "";
                     }
+                    
                     if (prod.Price > 0 && prod.upc.Length > 2)
                     {
                         prodList.Add(prod);

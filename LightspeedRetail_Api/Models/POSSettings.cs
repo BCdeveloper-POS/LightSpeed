@@ -56,6 +56,16 @@ namespace LightspeedRetail_Api
                             pobj.StoreSettings.POSSettings.categoriess = obj.POSSettings.categoriess;
                             pobj.StoreSettings.POSSettings.Upc = obj.POSSettings.Upc;
                         }
+                        if (dsResult.Tables[0].Columns.Contains("Config") && dr["Config"] != DBNull.Value && !string.IsNullOrWhiteSpace(dr["Config"].ToString()))
+                        {
+                            pobj.config = JsonConvert.DeserializeObject<Config>(dr["Config"].ToString());
+
+                        }
+                        else
+                        {
+                            pobj.config = new Config();
+                        }
+
                         posdetails.Add(pobj);
                     }
                 }
@@ -78,6 +88,17 @@ namespace LightspeedRetail_Api
         public StoreSetting StoreSettings { get; set; }
         public string Setting { get; set; }
         public string Refresh_token { get; set; }
+        public Config config { get; set; }
+    }
+
+    public class Config
+    {
+        public int StaticQty { get; set; }
+        public bool IsNegativeToPostiveQty { get; set; }
+        public bool IsRoundUp { get; set; }
+        public decimal Deposits { get; set; }
+        public bool IsDepositByPack { get; set; }
+        public bool InStockOnly { get; set; }
     }
     public class Setting
     {

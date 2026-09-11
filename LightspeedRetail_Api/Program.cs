@@ -12,6 +12,9 @@ namespace LightspeedRetail_Api
             string lightspeedAPIkey = ConfigurationManager.AppSettings["lightspeedAPIkey"];
             string lightspeedRSeries = ConfigurationManager.AppSettings["lightspeedRSeries"];
 
+            
+
+
 
             try
             {
@@ -19,13 +22,15 @@ namespace LightspeedRetail_Api
                 pOSSettings.IntializeStoreSettings();
                 foreach (POSSetting posDetail in pOSSettings.PosDetails)
                 {
-                    //if ( posDetail.StoreSettings.StoreId == 12160 )
-                    //{
-                    //    Console.WriteLine("fetching storeid" + posDetail.StoreSettings.StoreId);
-                    //}
-                    //else { continue; }
+
+                   /* if ( posDetail.StoreSettings.StoreId == 13363 || posDetail.StoreSettings.StoreId == 13364 || posDetail.StoreSettings.StoreId == 13365 || posDetail.StoreSettings.StoreId == 13366)
+                    {
+                        Console.WriteLine("fetching storeid" + posDetail.StoreSettings.StoreId);
+                    }
+                    else { continue; }*/
+
                     try
-                        {
+                    {
                             if (posDetail.PosName.ToUpper() == "LIGHTSPEED")
                             {
                                 Console.WriteLine("fetching storeid_" + posDetail.StoreSettings.StoreId);
@@ -101,6 +106,17 @@ namespace LightspeedRetail_Api
                                         rSeries.RunAsync().GetAwaiter().GetResult();
                                         Console.WriteLine();
                                     }
+                              else if (posDetail.StoreSettings.POSSettings.BaseUrl.Equals("https://cloud.lightspeedapp.com/oauth/access_token.php", StringComparison.OrdinalIgnoreCase)
+                                            && !string.IsNullOrEmpty(posDetail.StoreSettings.POSSettings.ClientId)
+                                         && !string.IsNullOrEmpty(posDetail.StoreSettings.POSSettings.ClientSecret)
+                                         && posDetail.StoreSettings.POSSettings.AccountID > 0)
+                                {
+                                    clsLightSpeedRSeries rSeries = new clsLightSpeedRSeries(posDetail.StoreSettings.StoreId, posDetail.StoreSettings.POSSettings.tax, posDetail.StoreSettings.POSSettings.BaseUrl, posDetail.StoreSettings.POSSettings.ClientId, posDetail.StoreSettings.POSSettings.ClientSecret, posDetail.StoreSettings.POSSettings.AccountID, posDetail.Refresh_token, posDetail.StoreSettings.POSSettings.shopID);
+                                    rSeries.RunAsync().GetAwaiter().GetResult();
+                                    Console.WriteLine();
+                                }
+
+
                                     else// remaining all stores
                                     {
                                         clsLightspeedRetail_Api clsLightspeedRetail_Api = new clsLightspeedRetail_Api(posDetail.StoreSettings.StoreId, posDetail.StoreSettings.POSSettings.tax, posDetail.StoreSettings.POSSettings.BaseUrl, posDetail.StoreSettings.POSSettings.ClientId, posDetail.StoreSettings.POSSettings.ClientSecret, posDetail.StoreSettings.POSSettings.RefreshToken, posDetail.StoreSettings.POSSettings.AccountID, posDetail.StoreSettings.POSSettings.IsMarkUpPrice, posDetail.StoreSettings.POSSettings.MarkUpValue);
