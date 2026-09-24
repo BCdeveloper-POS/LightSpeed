@@ -23,12 +23,12 @@ namespace LightspeedRetail_Api
                 foreach (POSSetting posDetail in pOSSettings.PosDetails)
                 {
 
-                   /* if ( posDetail.StoreSettings.StoreId == 13363 || posDetail.StoreSettings.StoreId == 13364 || posDetail.StoreSettings.StoreId == 13365 || posDetail.StoreSettings.StoreId == 13366)
+                   /* if (posDetail.StoreSettings.StoreId == 13366 )
                     {
                         Console.WriteLine("fetching storeid" + posDetail.StoreSettings.StoreId);
                     }
-                    else { continue; }*/
-
+                    else { continue; }
+*/
                     try
                     {
                             if (posDetail.PosName.ToUpper() == "LIGHTSPEED")
