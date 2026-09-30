@@ -21,9 +21,11 @@ namespace LightspeedRetail_Api
         private readonly string _baseUrl;
         private readonly string _accessToken;
 
-        public clsLightspeedAPI_X(int storeId, decimal tax, string baseUrl, string accessToken)
+        private readonly Config config; // NEW - 2026-09-30 - DB Config
+        public clsLightspeedAPI_X(int storeId, decimal tax, string baseUrl, string accessToken, Config storeConfig)
         {
             _storeId = storeId;
+            config = storeConfig; // NEW - 2026-09-30 - DB Config
             _tax = tax;
             _baseUrl = baseUrl;
             _accessToken = accessToken;
@@ -154,6 +156,16 @@ namespace LightspeedRetail_Api
                     prod.sku = "#" + item.sku;
                     full.sku = "#" + item.sku;
                     prod.Qty = item.qty;
+                    // NEW - 2026-09-30 - Convert negative stock to positive when configured (DB Config)
+                    if (config.IsNegativeToPostiveQty && prod.Qty < 0)
+                    {
+                        prod.Qty = Math.Abs(prod.Qty);
+                    }
+                    // NEW - 2026-09-30 - Static quantity override (DB Config)
+                    if (config.StaticQty > 0)
+                    {
+                        prod.Qty = config.StaticQty;
+                    }
                     if (item.price > 0)
                     {
                         prod.Price = (decimal)item.price;
@@ -197,6 +209,39 @@ namespace LightspeedRetail_Api
                     }
                     full.country = "";
                     full.region = "";
+
+                    // NEW - 2026-09-30 - Deposit from DB Config (per pack when IsDepositByPack)
+                    if (config.Deposits > 0)
+                    {
+                        prod.Deposit = config.Deposits;
+                        if (config.IsDepositByPack)
+                        {
+                            prod.Deposit = config.Deposits * Convert.ToInt32(prod.pack);
+                        }
+                    }
+                    // NEW - 2026-09-30 - Round up price to .49 / .99 (DB Config)
+                    if (config.IsRoundUp)
+                    {
+                        decimal price = prod.Price;
+                        if (price > 0)
+                        {
+                            decimal whole = Math.Floor(price);
+                            decimal cents = price - whole;
+                            if (cents <= 0.49M)
+                            {
+                                prod.Price = whole + 0.49M;
+                            }
+                            else
+                            {
+                                prod.Price = whole + 0.99M;
+                            }
+                        }
+                    }
+                    // NEW - 2026-09-30 - InStockOnly: skip out-of-stock items when configured (DB Config)
+                    if (config.InStockOnly && prod.Qty <= 0)
+                    {
+                        continue;
+                    }
 
                     if (prod.StoreID == 12160 && item.outlet == "06e94082-ed34-11ee-f619-d50768b8c813")
                     {
@@ -587,6 +632,7 @@ namespace LightspeedRetail_Api
             public string altupc3 { get; set; }
             public string altupc4 { get; set; }
             public string altupc5 { get; set; }
+            public decimal Deposit { get; set; } // NEW - 2026-09-30 - DB Config Deposits
 
         }
         public class Lightspeed_xFullNameProductModel

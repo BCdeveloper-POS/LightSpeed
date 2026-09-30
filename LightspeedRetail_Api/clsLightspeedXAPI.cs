@@ -19,9 +19,11 @@ namespace LightspeedRetail_Api
         private readonly string ClientId;
         private readonly string ClientSecret;
         private readonly string RefreshToken;
-        public clsLightspeedXAPI(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, string _RefreshToken)
+        private readonly Config config; // NEW - 2026-09-30 - DB Config
+        public clsLightspeedXAPI(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, string _RefreshToken, Config _config)
         {
             StoreId = _StoreId;
+            config = _config; // NEW - 2026-09-30 - DB Config
             tax = _tax;
             BaseUrl = _BaseUrl;
             ClientId = _ClientId;
@@ -35,7 +37,7 @@ namespace LightspeedRetail_Api
         {
             try
             {
-                await LightspeedXAPI_Products(StoreId, tax, BaseUrl, ClientId, ClientSecret, RefreshToken);                
+                await LightspeedXAPI_Products(StoreId, tax, BaseUrl, ClientId, ClientSecret, RefreshToken);
             }
             catch (Exception ex)
             {
@@ -130,6 +132,16 @@ namespace LightspeedRetail_Api
 
                             }
                             prod.Qty = Convert.ToInt32(item.qty);
+                            // NEW - 2026-09-30 - Convert negative stock to positive when configured (DB Config)
+                            if (config.IsNegativeToPostiveQty && prod.Qty < 0)
+                            {
+                                prod.Qty = Math.Abs(prod.Qty);
+                            }
+                            // NEW - 2026-09-30 - Static quantity override (DB Config)
+                            if (config.StaticQty > 0)
+                            {
+                                prod.Qty = config.StaticQty;
+                            }
 
                             prod.StoreID = storeid;
 
@@ -173,6 +185,38 @@ namespace LightspeedRetail_Api
 
 
 
+                            // NEW - 2026-09-30 - Deposit from DB Config (per pack when IsDepositByPack)
+                            if (config.Deposits > 0)
+                            {
+                                prod.Deposit = config.Deposits;
+                                if (config.IsDepositByPack)
+                                {
+                                    prod.Deposit = config.Deposits * Convert.ToInt32(prod.pack);
+                                }
+                            }
+                            // NEW - 2026-09-30 - Round up price to .49 / .99 (DB Config)
+                            if (config.IsRoundUp)
+                            {
+                                decimal price = prod.Price;
+                                if (price > 0)
+                                {
+                                    decimal whole = Math.Floor(price);
+                                    decimal cents = price - whole;
+                                    if (cents <= 0.49M)
+                                    {
+                                        prod.Price = whole + 0.49M;
+                                    }
+                                    else
+                                    {
+                                        prod.Price = whole + 0.99M;
+                                    }
+                                }
+                            }
+                            // NEW - 2026-09-30 - InStockOnly: skip out-of-stock items when configured (DB Config)
+                            if (config.InStockOnly && prod.Qty <= 0)
+                            {
+                                continue;
+                            }
                             if (prod.Price > 0 && prod.Qty > 0)
                             {
                                 prodList.Add(prod);
@@ -203,7 +247,7 @@ namespace LightspeedRetail_Api
                 }
                 else
                 {
-                    Console.WriteLine("Files not generated, No products in the ProductList "+storeid);
+                    Console.WriteLine("Files not generated, No products in the ProductList " + storeid);
 
                 }
             }
@@ -221,7 +265,7 @@ namespace LightspeedRetail_Api
                 var client = new RestClient(BaseUrl + "2.0/products?page_size=100000" + ""); //Note:To get more products Increase the page size
                 var request = new RestRequest("", Method.Get);
                 request.AddHeader("Authorization", "Bearer " + accessToken);
-                request.AddHeader("cache-control", "no-cache");              
+                request.AddHeader("cache-control", "no-cache");
                 //request.AddHeader("content-type", "application/x-www-form-urlencoded");
                 var response = await client.ExecuteAsync(request);
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -439,6 +483,7 @@ namespace LightspeedRetail_Api
                 public string altupc3 { get; set; }
                 public string altupc4 { get; set; }
                 public string altupc5 { get; set; }
+                public decimal Deposit { get; set; } // NEW - 2026-09-30 - DB Config Deposits
 
             }
             public class LightspeedxFullNameProductModel

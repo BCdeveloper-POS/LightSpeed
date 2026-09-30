@@ -33,9 +33,11 @@ namespace LightspeedRetail_Api
                 Console.WriteLine(ex.Message);
             }
         }
-        public clsLightspeedRetail_Api(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, string _RefreshToken, int _AccountID, bool _IsMarkUpPrice, int _MarkUpValue)
+        private readonly Config config; // NEW - 2026-09-30 - DB Config
+        public clsLightspeedRetail_Api(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, string _RefreshToken, int _AccountID, bool _IsMarkUpPrice, int _MarkUpValue, Config _config)
         {
             StoreId = _StoreId;
+            config = _config; // NEW - 2026-09-30 - DB Config
             tax = _tax;
             BaseUrl = _BaseUrl;
             ClientId = _ClientId;
@@ -123,6 +125,17 @@ namespace LightspeedRetail_Api
 
                             string qt = qtyy;
                             prod.Qty = Convert.ToInt64(qt) > 0 ? Convert.ToInt64(qt) : 0;
+
+                            // NEW - 2026-09-30 - Convert negative stock to positive when configured (DB Config)
+                            if (config.IsNegativeToPostiveQty && Convert.ToInt64(qt) < 0)
+                            {
+                                prod.Qty = Math.Abs(Convert.ToInt64(qt));
+                            }
+                            // NEW - 2026-09-30 - Static quantity override (DB Config)
+                            if (config.StaticQty > 0)
+                            {
+                                prod.Qty = config.StaticQty;
+                            }
 
                             var Cat_Item = !catnull.Contains(storeid.ToString()) ? JsonConvert.DeserializeObject<clsLightProductList.Category>(record["Category"].ToString()) : null;
                             var json_cat = !catnull.Contains(storeid.ToString()) ? JsonConvert.SerializeObject(record["Category"]) : null;
@@ -249,6 +262,38 @@ namespace LightspeedRetail_Api
                             fullName.uom = "";
                             fullName.country = "";
                             fullName.region = "";
+                            // NEW - 2026-09-30 - Deposit from DB Config (per pack when IsDepositByPack)
+                            if (config.Deposits > 0)
+                            {
+                                prod.Deposit = config.Deposits;
+                                if (config.IsDepositByPack)
+                                {
+                                    prod.Deposit = config.Deposits * Convert.ToInt32(prod.pack);
+                                }
+                            }
+                            // NEW - 2026-09-30 - Round up price to .49 / .99 (DB Config)
+                            if (config.IsRoundUp)
+                            {
+                                decimal price = prod.Price;
+                                if (price > 0)
+                                {
+                                    decimal whole = Math.Floor(price);
+                                    decimal cents = price - whole;
+                                    if (cents <= 0.49M)
+                                    {
+                                        prod.Price = whole + 0.49M;
+                                    }
+                                    else
+                                    {
+                                        prod.Price = whole + 0.99M;
+                                    }
+                                }
+                            }
+                            // NEW - 2026-09-30 - InStockOnly: skip out-of-stock items when configured (DB Config)
+                            if (config.InStockOnly && prod.Qty <= 0)
+                            {
+                                continue;
+                            }
                             if (Filters.Contains(storeid.ToString()))    //10932
                             {
                                 if (prod.Price > 0 && prod.upc.Trim() != "#" && prod.Qty > 0)
@@ -555,6 +600,8 @@ namespace LightspeedRetail_Api
                 public string altupc3 { get; set; }
                 public string altupc4 { get; set; }
                 public string altupc5 { get; set; }
+
+                public decimal Deposit { get; set; } // NEW - 2026-09-30 - DB Config Deposits
                 // public int catID { get; set; }
             }
         }

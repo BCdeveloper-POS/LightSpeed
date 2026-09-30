@@ -25,6 +25,7 @@ namespace LightspeedRetail_Api.Model
         public string altupc3 { get; set; }
         public string altupc4 { get; set; }
         public string altupc5 { get; set; }
+        public decimal Deposit { get; set; } // NEW - 2026-09-30 - DB Config Deposits
     }
     public class ProductsModel
     {

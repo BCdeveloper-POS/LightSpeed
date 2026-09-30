@@ -20,9 +20,11 @@ namespace LightspeedRetail_Api
         private readonly string ClientId;
         private readonly string ClientSecret;
         private readonly string RefreshToken;
-        public VendhqxLightspeed(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, string _RefreshToken)
+        private readonly Config config; // NEW - 2026-09-30 - DB Config
+        public VendhqxLightspeed(int _StoreId, decimal _tax, string _BaseUrl, string _ClientId, string _ClientSecret, string _RefreshToken, Config _config)
         {
             StoreId = _StoreId;
+            config = _config; // NEW - 2026-09-30 - DB Config
             tax = _tax;
             BaseUrl = _BaseUrl;
             ClientId = _ClientId;
@@ -107,7 +109,7 @@ namespace LightspeedRetail_Api
         //    }
         //    return Stocklist;
         //}
-        public  async Task<List<ProductResponseModel.Product>> GetProducts(string BaseUrl, int StoreId, decimal tax, string ClientId, string ClientSecret, string RefreshToken)
+        public async Task<List<ProductResponseModel.Product>> GetProducts(string BaseUrl, int StoreId, decimal tax, string ClientId, string ClientSecret, string RefreshToken)
         {
             string Url = "";
             int recordsTotal = 200;
@@ -122,7 +124,7 @@ namespace LightspeedRetail_Api
             {
                 for (int pageNo = 0; pageNo <= pgcount; pageNo++)
                 {
-                    string ApiUrl = BaseUrl + "products"+ "?page=" +pageNo+ "&page_size=" +page_size+ "";
+                    string ApiUrl = BaseUrl + "products" + "?page=" + pageNo + "&page_size=" + page_size + "";
                     ApiUrl = string.IsNullOrEmpty(Url) ? ApiUrl : Url;
                     var client = new RestClient(ApiUrl);
                     var request = new RestRequest("", Method.Get);
@@ -165,7 +167,7 @@ namespace LightspeedRetail_Api
 
 
             try
-            {                
+            {
                 //var prodList = (from a in pList
                 //                select new
                 //                {
@@ -230,6 +232,16 @@ namespace LightspeedRetail_Api
                         pdf.sku = "#" + upc;
                         fnf.sku = "#" + upc;
                         pdf.Qty = Convert.ToInt64(item.inventory == null ? "0" : item.inventory.FirstOrDefault().count);
+                        // NEW - 2026-09-30 - Convert negative stock to positive when configured (DB Config)
+                        if (config.IsNegativeToPostiveQty && pdf.Qty < 0)
+                        {
+                            pdf.Qty = Math.Abs(pdf.Qty);
+                        }
+                        // NEW - 2026-09-30 - Static quantity override (DB Config)
+                        if (config.StaticQty > 0)
+                        {
+                            pdf.Qty = config.StaticQty;
+                        }
                         pdf.pack = 1;
                         pdf.StoreProductName = item.name.ToString();
                         pdf.StoreDescription = item.name.ToString();
@@ -257,6 +269,38 @@ namespace LightspeedRetail_Api
                         fnf.pcat2 = "";
                         fnf.country = "";
                         fnf.region = "";
+                        // NEW - 2026-09-30 - Deposit from DB Config (per pack when IsDepositByPack)
+                        if (config.Deposits > 0)
+                        {
+                            pdf.Deposit = config.Deposits;
+                            if (config.IsDepositByPack)
+                            {
+                                pdf.Deposit = config.Deposits * Convert.ToInt32(pdf.pack);
+                            }
+                        }
+                        // NEW - 2026-09-30 - Round up price to .49 / .99 (DB Config)
+                        if (config.IsRoundUp)
+                        {
+                            decimal price = pdf.Price;
+                            if (price > 0)
+                            {
+                                decimal whole = Math.Floor(price);
+                                decimal cents = price - whole;
+                                if (cents <= 0.49M)
+                                {
+                                    pdf.Price = whole + 0.49M;
+                                }
+                                else
+                                {
+                                    pdf.Price = whole + 0.99M;
+                                }
+                            }
+                        }
+                        // NEW - 2026-09-30 - InStockOnly: skip out-of-stock items when configured (DB Config)
+                        if (config.InStockOnly && pdf.Qty <= 0)
+                        {
+                            continue;
+                        }
                         if (!string.IsNullOrEmpty(pdf.upc) && pdf.Price > 0)
                         {
                             pf.Add(pdf);
@@ -288,7 +332,7 @@ namespace LightspeedRetail_Api
             }
             else
             {
-                Console.WriteLine("Files not generated, No products in the ProductList "+storeid);
+                Console.WriteLine("Files not generated, No products in the ProductList " + storeid);
 
             }
         }
