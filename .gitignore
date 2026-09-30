@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/LightspeedRetail_Api
+/LightspeedRetail_Api/bin/Debug
+*.Up2Date
+/Visual Studio 2022/Visualizers
+/LightspeedRetail_Api/obj/Debug/LightspeedRetail_Api.exe.config
